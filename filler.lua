@@ -23,6 +23,21 @@ local smallmap = [[
 ##
 ]]
 
+local funmap = [[
+###
+###
+###
+
+###
+#x#
+###
+
+###
+###
+###
+]]
+
+
 function parse_block(map)
   local block = {}
   local level = {}
@@ -175,4 +190,5 @@ return {
   flood_fill_3d = flood_fill_3d,
   ff = function(b) flood_fill_3d(b, '#', 'x') end,
   smallmap = parse_block(smallmap)
+  funmap = parse_block(funmap)
 }
