@@ -74,14 +74,24 @@ function make_cardinal_mover()
   }
 end
 
+-- Either move to it or move to it and dig it
 function dig_move(cardinal_mover, direction)
   if direction <= 4 and direction >= 1 then
     cardinal_mover.turn_towards(direction)
-    return turtle.forward() and turtle.dig()
+    if not turtle.forward() then
+      turtle.dig()
+      turtle.forward()
+    end
   elseif direction == dir.down then
-    return turtle.down() and turtle.digDown()
+    if not turtle.down() then
+      turtle.digDown()
+      turtle.down()
+    end
   elseif direction == dir.up then
-    return turtle.up() and turtle.digUp()
+    if not turtle.up() then
+      turtle.digUp()
+      turtle.up()
+    end
   else
     error('not a direction', direction)
   end
@@ -123,6 +133,14 @@ function do_node(block, n_pos, replacement)
   block[n_pos.y][n_pos.z][n_pos.x] = replacement
 end
 
+function print_dir(di)
+  for k, v in pairs(dir) do
+    if v == di then
+      print(k)
+      return;
+    end
+  end
+end
 
 function flood_fill_3d(block, target, replacement)
   local mover = make_cardinal_mover()
@@ -140,6 +158,7 @@ function flood_fill_3d(block, target, replacement)
       local p = new_pos(n_pos, i)
 
       if should_fill(p) then
+        print_dir(i)
         dig_move(mover, i)
         loop(p)
       end
