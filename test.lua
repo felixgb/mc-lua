@@ -1,22 +1,7 @@
-map = [[
-#####
-#xxx#
-#xxx#
-#####
-
-#####
-#xxxx
-#xxx#
-#####
-
-#####
-#xxx#
-#xxx#
-#####
-]]
+filler = loadfile('filler.lua')()
 
 function print_block(block)
-  for i, level in pairs(b) do
+  for i, level in pairs(block) do
     print('level:')
     for k, row in pairs(level) do
       for l, col in pairs(row) do
@@ -27,88 +12,120 @@ function print_block(block)
   end
 end
 
-function parse_block(map)
-  local block = {}
-  local level = {}
-
-  for line in map:gmatch('([^\n]*)\n?') do
-    if line == '' then
-      block[#block + 1] = level
-      level = {}
-    else
-      local chars = {}
-      for i = 1, #line do
-        chars[#chars + 1] = string.sub(line, i, i)
+function assert_commands(expected, actual)
+  local len = #expected > #actual and #expected or #actual
+  for i, v in pairs(expected) do
+    if v ~= actual[i] then
+      print('\27[31mCommand mismatch:')
+      print('index', 'expect', 'actual')
+      for i = 1, len do
+        print(i, expected[i], actual[i])
       end
-      level[#level + 1] = chars
+      assert(false)
     end
   end
-  block[#block + 1] = level
-
-  return block
 end
 
-dir = {
-  up = 1,
-  down = 2,
-  north = 3,
-  east = 4,
-  south = 5,
-  west = 6,
-}
+function test_with_turtle(f, expected_commands)
+  commands = {}
+  turtle = {
+    turnRight = function() commands[#commands + 1] = 'right'; return true end,
+    forward = function() commands[#commands + 1] = 'forward'; return true end,
+    dig = function() commands[#commands + 1] = 'dig'; return true end
+  }
+  f()
+  assert_commands(expected_commands, commands)
+end
 
-function move(old_pos, to_move)
-  local n_pos = {
-    x = old_pos.x,
-    y = old_pos.y,
-    z = old_pos.z
+function test_turn_south()
+  local test = function()
+    mover = filler.make_cardinal_mover()
+    mover.turn_towards(dir.south)
+  end
+  local expected = {
+    'right',
+    'right'
   }
 
-  if to_move == dir.up then 
-    n_pos.y = n_pos.y + 1
-  elseif to_move == dir.down then
-    n_pos.y = n_pos.y - 1
-  elseif to_move == dir.north then
-    n_pos.z = n_pos.z + 1
-  elseif to_move == dir.east then
-    n_pos.x = n_pos.x - 1
-  elseif to_move == dir.south then
-    n_pos.z = n_pos.z - 1
-  elseif to_move == dir.west then
-    n_pos.x = n_pos.x + 1
-  else
-    error('not a direction:', to_move)
+  test_with_turtle(test, expected)
+end
+
+function test_turn_north()
+  local test = function()
+    mover = filler.make_cardinal_mover()
+    mover.turn_towards(dir.north)
+  end
+  local expected = {}
+  test_with_turtle(test, expected)
+end
+
+function test_dig_move_south()
+  local test = function()
+    mover = filler.make_cardinal_mover()
+    filler.dig_move(mover, dir.south)
+  end
+  local expected = {
+    'right',
+    'right',
+    'forward'
+  }
+
+  test_with_turtle(test, expected)
+end
+
+function test_dig_move_dirt()
+  local test = function()
+    turtle.forward = function() commands[#commands + 1] = 'forward'; return false end
+    mover = filler.make_cardinal_mover()
+    filler.dig_move(mover, dir.south)
+  end
+  local expected = {
+    'right',
+    'right',
+    'forward',
+    'dig'
+  }
+
+  test_with_turtle(test, expected)
+end
+
+function test_ff(map, expected)
+  local test = function()
+    local b = parse_block(map)
+    mover = filler.make_cardinal_mover()
+    filler.flood_fill_3d(b, '.', 'x')
   end
 
-  return n_pos
+  test_with_turtle(test, expected)
 end
 
-function node_type(block, n_pos)
-  return block[n_pos.y] 
-    and block[n_pos.y][n_pos.x]
-    and block[n_pos.y][n_pos.x][n_pos.z]
-end
 
-function do_node(block, n_pos, replacement)
-  block[n_pos.y][n_pos.x][n_pos.z] = replacement
-end
-
-function flood_fill_3d(block, n_pos, target, replacement)
-  local typ = node_type(block, n_pos) 
-  if typ == nill or typ ~= target or target == replacement then return end
-
-  do_node(block, n_pos, replacement)
-  for _, d in pairs(dir) do
-    local new_p = move(n_pos, d)
-
-    flood_fill_3d(block, new_p, target, replacement)
-  end
-end
-
--- b = parse_block(map)
--- start_pos = { x = 1, y = 1, z = 1}
--- 
--- flood_fill_3d(b, start_pos, '#', '.')
--- print_block(b)
-
-turtle.up()
+-- test_turn_north()
+-- test_turn_south()
+-- test_dig_move_south()
+-- test_dig_move_dirt()
+-- test_ff(
+-- [[
+-- ...
+-- ###
+-- ###
+-- ]],
+-- {
+--   'right',
+--   'forward',
+--   'forward'
+-- })
+test_ff(
+[[
+...
+##.
+##.
+]],
+{
+  'right',
+  'forward',
+  'forward',
+  'right',
+  'forward',
+  'forward'
+})
