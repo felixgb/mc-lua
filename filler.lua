@@ -18,9 +18,6 @@ local map = [[
 local smallmap = [[
 ##
 ##
-
-##
-##
 ]]
 
 function parse_block(map)
@@ -75,8 +72,16 @@ function make_cardinal_mover()
 end
 
 function dig_move(cardinal_mover, direction)
-  cardinal_mover.turn_towards(direction)
-  return turtle.forward() or turtle.dig()
+  if direction <= 4 and direction >= 1 then
+    cardinal_mover.turn_towards(direction)
+    return turtle.forward() or turtle.dig()
+  elseif direction == dir.down then
+    return turtle.down() or turtle.digDown()
+  elseif direction == dir.up then
+    return turtle.up() or turtle.digUp()
+  else
+    error('not a direction', direction)
+  end
 end
 
 function new_pos(old_pos, to_move)
@@ -87,9 +92,9 @@ function new_pos(old_pos, to_move)
   }
 
   if to_move == dir.up then 
-    n_pos.y = n_pos.y + 1
-  elseif to_move == dir.down then
     n_pos.y = n_pos.y - 1
+  elseif to_move == dir.down then
+    n_pos.y = n_pos.y + 1
   elseif to_move == dir.north then
     n_pos.z = n_pos.z - 1
   elseif to_move == dir.east then
@@ -128,11 +133,11 @@ function flood_fill_3d(block, target, replacement)
   function loop(n_pos)
     do_node(block, n_pos, replacement)
 
-    for _, d in pairs(dir) do
-      local p = new_pos(n_pos, d)
+    for i = 1, 6 do
+      local p = new_pos(n_pos, i)
 
       if should_fill(p) then
-        dig_move(mover, d)
+        dig_move(mover, i)
         loop(p)
       end
     end

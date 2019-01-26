@@ -31,7 +31,11 @@ function test_with_turtle(f, expected_commands)
   turtle = {
     turnRight = function() commands[#commands + 1] = 'right'; return true end,
     forward = function() commands[#commands + 1] = 'forward'; return true end,
-    dig = function() commands[#commands + 1] = 'dig'; return true end
+    dig = function() commands[#commands + 1] = 'dig'; return true end,
+    digDown = function() commands[#commands + 1] = 'digDown'; return true end,
+    digUp = function() commands[#commands + 1] = 'digUp'; return true end,
+    down = function() commands[#commands + 1] = 'down'; return true end,
+    up = function() commands[#commands + 1] = 'up'; return true end
   }
   f()
   assert_commands(expected_commands, commands)
@@ -126,5 +130,41 @@ test_ff(
   'forward',
   'right',
   'forward',
+  'forward'
+})
+test_ff(
+[[
+..
+..
+]],
+{
+  'right',
+  'forward',
+  'right',
+  'forward',
+  'right',
+  'forward'
+})
+test_ff(
+[[
+..
+..
+
+..
+..
+]],
+{
+  'right',
+  'forward',
+  'right',
+  'forward',
+  'right',
+  'forward',
+  'down',
+  'right',
+  'forward',
+  'right',
+  'forward',
+  'right',
   'forward'
 })
