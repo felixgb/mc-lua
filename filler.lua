@@ -51,6 +51,16 @@ xxx
 ###
 ]]
 
+function print_block(block)
+  for i, level in pairs(block) do
+    for k, row in pairs(level) do
+      for l, col in pairs(row) do
+        io.write(col)
+      end
+      print('')
+    end
+  end
+end
 
 function parse_block(map)
   local block = {}
@@ -188,6 +198,7 @@ function flood_fill_3d(block, target, replacement)
   end
 
   loop(start_pos)
+  print_block(block)
 end
 
 return {
