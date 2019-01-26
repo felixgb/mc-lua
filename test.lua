@@ -99,22 +99,21 @@ function test_ff(map, expected)
   test_with_turtle(test, expected)
 end
 
-
--- test_turn_north()
--- test_turn_south()
--- test_dig_move_south()
--- test_dig_move_dirt()
--- test_ff(
--- [[
--- ...
--- ###
--- ###
--- ]],
--- {
---   'right',
---   'forward',
---   'forward'
--- })
+test_turn_north()
+test_turn_south()
+test_dig_move_south()
+test_dig_move_dirt()
+test_ff(
+[[
+...
+###
+###
+]],
+{
+  'right',
+  'forward',
+  'forward'
+})
 test_ff(
 [[
 ...

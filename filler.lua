@@ -1,4 +1,4 @@
-map = [[
+local map = [[
 #####
 #xxx#
 #xxx#
@@ -13,6 +13,14 @@ map = [[
 #xxx#
 #xxx#
 #####
+]]
+
+local smallmap = [[
+##
+##
+
+##
+##
 ]]
 
 function parse_block(map)
@@ -137,5 +145,7 @@ return {
   make_cardinal_mover = make_cardinal_mover,
   dig_move = dig_move,
   parse_block = parse_block,
-  flood_fill_3d = flood_fill_3d
+  flood_fill_3d = flood_fill_3d,
+  ff = function(b) flood_fill_3d(b, '#', 'x') end,
+  smallmap = parse_block(smallmap)
 }
