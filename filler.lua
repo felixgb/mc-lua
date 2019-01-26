@@ -140,7 +140,7 @@ function flood_fill_3d(block, target, replacement)
       local p = new_pos(n_pos, i)
 
       if should_fill(p) then
-        dig_move(mover, i)
+        if not dig_move(mover, i) then error('move in:', i, 'failed') end
         loop(p)
       end
     end
