@@ -105,8 +105,10 @@ function flood_fill_3d(block, n_pos, target, replacement)
   end
 end
 
-b = parse_block(map)
-start_pos = { x = 1, y = 1, z = 1}
+-- b = parse_block(map)
+-- start_pos = { x = 1, y = 1, z = 1}
+-- 
+-- flood_fill_3d(b, start_pos, '#', '.')
+-- print_block(b)
 
-flood_fill_3d(b, start_pos, '#', '.')
-print_block(b)
+turtle.up()
