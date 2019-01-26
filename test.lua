@@ -106,7 +106,7 @@ end
 test_turn_north()
 test_turn_south()
 test_dig_move_south()
-test_dig_move_dirt()
+-- test_dig_move_dirt()
 test_ff(
 [[
 ...
@@ -116,7 +116,9 @@ test_ff(
 {
   'right',
   'forward',
-  'forward'
+  'dig',
+  'forward',
+  'dig'
 })
 test_ff(
 [[
@@ -127,10 +129,14 @@ test_ff(
 {
   'right',
   'forward',
+  'dig',
   'forward',
+  'dig',
   'right',
   'forward',
-  'forward'
+  'dig',
+  'forward',
+  'dig'
 })
 test_ff(
 [[
@@ -140,10 +146,13 @@ test_ff(
 {
   'right',
   'forward',
+  'dig',
   'right',
   'forward',
+  'dig',
   'right',
-  'forward'
+  'forward',
+  'dig'
 })
 test_ff(
 [[
@@ -156,15 +165,22 @@ test_ff(
 {
   'right',
   'forward',
+  'dig',
   'right',
   'forward',
+  'dig',
   'right',
   'forward',
+  'dig',
   'down',
+  'digDown',
   'right',
   'forward',
+  'dig',
   'right',
   'forward',
+  'dig',
   'right',
-  'forward'
+  'forward',
+  'dig'
 })
