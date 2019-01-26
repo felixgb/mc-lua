@@ -54,6 +54,23 @@ function test_turn_south()
   test_with_turtle(test, expected)
 end
 
+function test_360()
+  local test = function()
+    mover = filler.make_cardinal_mover()
+    mover.turn_towards(dir.east)
+    mover.turn_towards(dir.north)
+    assert(mover.facing_now == dir.north)
+  end
+  local expected = {
+    'right',
+    'right',
+    'right',
+    'right'
+  }
+
+  test_with_turtle(test, expected)
+end
+
 function test_turn_north()
   local test = function()
     mover = filler.make_cardinal_mover()
@@ -78,22 +95,6 @@ function test_dig_move_south()
   test_with_turtle(test, expected)
 end
 
-function test_dig_move_dirt()
-  local test = function()
-    turtle.forward = function() commands[#commands + 1] = 'forward'; return false end
-    mover = filler.make_cardinal_mover()
-    filler.dig_move(mover, dir.south)
-  end
-  local expected = {
-    'right',
-    'right',
-    'dig',
-    'forward'
-  }
-
-  test_with_turtle(test, expected)
-end
-
 function test_ff(map, expected)
   local test = function()
     local b = parse_block(map)
@@ -104,10 +105,10 @@ function test_ff(map, expected)
   test_with_turtle(test, expected)
 end
 
+test_360()
 test_turn_north()
 test_turn_south()
 test_dig_move_south()
-test_dig_move_dirt()
 test_ff(
 [[
 ...

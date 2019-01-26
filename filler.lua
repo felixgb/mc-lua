@@ -106,15 +106,15 @@ function dig_move(cardinal_mover, direction)
   if direction <= 4 and direction >= 1 then
     cardinal_mover.turn_towards(direction)
     turtle.dig()
-    turtle.forward()
+    assert(turtle.forward())
   elseif direction == dir.down then
     cardinal_mover.turn_towards(dir.north)
     turtle.digDown()
-    turtle.down()
+    assert(turtle.down())
   elseif direction == dir.up then
     cardinal_mover.turn_towards(dir.north)
     turtle.digUp()
-    turtle.up()
+    assert(turtle.up())
   else
     error('not a direction', direction)
   end
