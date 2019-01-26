@@ -18,6 +18,9 @@ local map = [[
 local smallmap = [[
 ##
 ##
+
+##
+##
 ]]
 
 function parse_block(map)
