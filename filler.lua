@@ -51,17 +51,6 @@ xxx
 ###
 ]]
 
-function print_block(block)
-  for i, level in pairs(block) do
-    for k, row in pairs(level) do
-      for l, col in pairs(row) do
-        io.write(col)
-      end
-      print('')
-    end
-  end
-end
-
 function parse_block(map)
   local block = {}
   local level = {}
@@ -119,9 +108,11 @@ function dig_move(cardinal_mover, direction)
     turtle.dig()
     turtle.forward()
   elseif direction == dir.down then
+    cardinal_mover.turn_towards(dir.north)
     turtle.digDown()
     turtle.down()
   elseif direction == dir.up then
+    cardinal_mover.turn_towards(dir.north)
     turtle.digUp()
     turtle.up()
   else
@@ -184,21 +175,20 @@ function flood_fill_3d(block, target, replacement)
   end
 
   function loop(n_pos)
-    do_node(block, n_pos, replacement)
-
     for i = 1, 6 do
       local p = new_pos(n_pos, i)
 
       if should_fill(p) then
-        print_dir(i)
+        do_node(block, p, replacement)
         dig_move(mover, i)
         loop(p)
       end
     end
   end
 
+  do_node(block, start_pos, replacement)
   loop(start_pos)
-  print_block(block)
+  return block
 end
 
 return {

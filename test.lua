@@ -98,7 +98,7 @@ function test_ff(map, expected)
   local test = function()
     local b = parse_block(map)
     mover = filler.make_cardinal_mover()
-    filler.flood_fill_3d(b, '.', 'x')
+    print_block(filler.flood_fill_3d(b, '.', 'x'))
   end
 
   test_with_turtle(test, expected)
@@ -191,36 +191,53 @@ test_ff(
 
 test_ff(
 [[
-...
-...
-...
+.##
+###
 
-...
-.x.
-...
+..#
+..#
+###
 
 ...
 ...
 ...
 ]],
 {
-  'right',
-
-  'dig',
-  'forward',
-  'dig',
-  'forward',
-  'right',
-
-  'dig',
-  'forward',
-  'dig',
-  'forward',
-  'right',
-
-  'dig',
-  'forward',
-  'dig',
-  'forward',
-  'right'
+'digDown',
+'down',
+'right',
+'dig',
+'forward',
+'right',
+'dig',
+'forward',
+'right',
+'dig',
+'forward',
+'digDown',
+'down',
+'right',
+'dig',
+'forward',
+'right',
+'dig',
+'forward',
+'dig',
+'forward',
+'right',
+'dig',
+'forward',
+'dig',
+'forward',
+'right',
+'dig',
+'forward',
+'right',
+'dig',
+'forward',
+'right',
+'right',
+'right',
+'dig',
+'forward'
 })
