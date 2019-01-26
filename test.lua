@@ -71,6 +71,7 @@ function test_dig_move_south()
   local expected = {
     'right',
     'right',
+    'dig',
     'forward'
   }
 
@@ -86,6 +87,7 @@ function test_dig_move_dirt()
   local expected = {
     'right',
     'right',
+    'dig',
     'forward'
   }
 
@@ -114,11 +116,12 @@ test_ff(
 ]],
 {
   'right',
-  'forward',
   'dig',
   'forward',
-  'dig'
+  'dig',
+  'forward'
 })
+
 test_ff(
 [[
 ...
@@ -127,16 +130,17 @@ test_ff(
 ]],
 {
   'right',
-  'forward',
   'dig',
   'forward',
   'dig',
+  'forward',
   'right',
-  'forward',
   'dig',
   'forward',
-  'dig'
+  'dig',
+  'forward'
 })
+
 test_ff(
 [[
 ..
@@ -144,15 +148,16 @@ test_ff(
 ]],
 {
   'right',
-  'forward',
   'dig',
-  'right',
   'forward',
+  'right',
   'dig',
-  'right',
   'forward',
-  'dig'
+  'right',
+  'dig',
+  'forward'
 })
+
 test_ff(
 [[
 ..
@@ -163,23 +168,59 @@ test_ff(
 ]],
 {
   'right',
-  'forward',
   'dig',
+  'forward',
   'right',
-  'forward',
   'dig',
+  'forward',
   'right',
-  'forward',
   'dig',
-  'down',
+  'forward',
   'digDown',
+  'down',
   'right',
+  'dig',
+  'forward',
+  'right',
+  'dig',
+  'forward',
+  'right',
+  'dig',
+  'forward'
+})
+
+test_ff(
+[[
+...
+...
+...
+
+...
+.x.
+...
+
+...
+...
+...
+]],
+{
+  'right',
+
+  'dig',
   'forward',
   'dig',
+  'forward',
   'right',
+
+  'dig',
   'forward',
   'dig',
-  'right',
   'forward',
-  'dig'
+  'right',
+
+  'dig',
+  'forward',
+  'dig',
+  'forward',
+  'right'
 })

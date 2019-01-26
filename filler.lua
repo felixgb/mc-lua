@@ -37,6 +37,20 @@ local funmap = [[
 ###
 ]]
 
+local thickmap = [[
+###
+###
+###
+
+###
+###
+###
+
+###
+###
+###
+]]
+
 
 function parse_block(map)
   local block = {}
@@ -89,24 +103,17 @@ function make_cardinal_mover()
   }
 end
 
--- Either move to it or move to it and dig it
 function dig_move(cardinal_mover, direction)
   if direction <= 4 and direction >= 1 then
     cardinal_mover.turn_towards(direction)
-    if not turtle.forward() then
-      turtle.dig()
-      turtle.forward()
-    end
+    turtle.dig()
+    turtle.forward()
   elseif direction == dir.down then
-    if not turtle.down() then
-      turtle.digDown()
-      turtle.down()
-    end
+    turtle.digDown()
+    turtle.down()
   elseif direction == dir.up then
-    if not turtle.up() then
-      turtle.digUp()
-      turtle.up()
-    end
+    turtle.digUp()
+    turtle.up()
   else
     error('not a direction', direction)
   end
@@ -190,5 +197,6 @@ return {
   flood_fill_3d = flood_fill_3d,
   ff = function(b) flood_fill_3d(b, '#', 'x') end,
   smallmap = parse_block(smallmap),
-  funmap = parse_block(funmap)
+  funmap = parse_block(funmap),
+  thickmap = parse_block(thickmap)
 }
