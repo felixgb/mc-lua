@@ -82,6 +82,7 @@ function Queue(t)
   for _, v in pairs(t) do enqueue(v) end
 
   return {
+    is_empty = function() return first == last end,
     enqueue = enqueue,
     dequeue = function()
       local v = q[first]
@@ -104,6 +105,13 @@ function Set(t, hash_fun)
     contains = function(v) return s[hash_fun(v)] end,
     remove = function(v) s[hash_fun(v)] = nil end,
     add = function(v) s[hash_fun(v)] = true end,
+    is_empty = function()
+      local count = 0
+      for k, v in pairs(s) do
+        count = count + 1
+      end
+      return count == 0
+    end,
     all = s
   }
 end
@@ -235,13 +243,16 @@ function print_dir(di)
   end
 end
 
-function print_block(block)
-  print('BLOCK::::::::')
+function print_block(block, c_pos)
   for i, level in pairs(block) do
     print('level:')
     for k, row in pairs(level) do
       for l, col in pairs(row) do
-        io.write(col)
+        if i == c_pos.y and k == c_pos.z and l == c_pos.x then
+          io.write('%')
+        else
+          io.write(col)
+        end
       end
       print('')
     end
@@ -257,6 +268,22 @@ function num_entries(table)
   return count
 end
 
+function first_that(table, pred)
+  for k, v in pairs(table) do
+    if pred(v) then
+      return k, v
+    end
+  end
+end
+
+function valid_moves(pos, pred)
+  local moves = {}
+  for dir, node in pairs(adj_nodes(pos)) do
+    if pred(node) then moves[dir] = node end
+  end
+  return moves
+end
+
 function flood_fill_3d(block, target, replacement)
   if target == replacement then
     error('target cannot be the same as replacement') 
@@ -264,7 +291,7 @@ function flood_fill_3d(block, target, replacement)
 
   local start_pos = { x = 1, y = 1, z = 1}
   local mover = make_cardinal_mover(start_pos)
-  local todo = 0
+  local todo = Set({}, pos_to_string)
 
   function should_fill(n_pos)
     local typ = node_type(block, n_pos) 
@@ -280,34 +307,67 @@ function flood_fill_3d(block, target, replacement)
     block[pos.y][pos.z][pos.x] = replacement
   end
 
+  function pair(a, b) return { a, b } end
+  function unpair(p) return p[1], p[2] end
+
+  function find_path(start_pos, end_poss)
+    local q = Queue({ pair(start_pos, { nil }) })
+    local visited = Set({}, pos_to_string)
+
+    function pred(v)
+      return is_filled(v) or end_poss.contains(v)
+    end
+
+    while not q.is_empty() do
+      local vertex, path = unpair(q.dequeue())
+      visited.add(vertex)
+
+      for dir, adj in pairs(valid_moves(vertex, pred)) do
+        if end_poss.contains(adj) then
+          return path
+        elseif not visited.contains(adj) then
+          visited.add(adj)
+          local new_path = append(path, dir)
+          q.enqueue(pair(adj, new_path))
+        end
+      end
+    end
+  end
+  
+  function append(ls, e)
+    local out = {}
+    for i = 0, #ls do
+      out[i] = ls[i]
+    end
+    out[#ls + 1] = e
+    return out
+  end
+
   function walk(n_pos, from_dir)
     mark_node(n_pos)
 
     if from_dir then
       dig_move(mover, from_dir)
-      todo = todo - 1
+      todo.remove(n_pos)
     end
 
-    local adj = adj_nodes(n_pos)
-
-    for dir, node in pairs(adj) do
-      if should_fill(node) then
-        todo = todo + 1
-      end
-    end
-    print(todo)
-
-    for dir, node in pairs(adj) do
-      if should_fill(node) then
-        print_block(block)
-        walk(node, dir)
-      end
+    print_block(block, mover.position)
+    io.read()
+    for k, v in pairs(adj_nodes(n_pos)) do
+      if should_fill(v) then todo.add(v) end
     end
 
-    for dir, node in pairs(adj) do
-      if is_filled(node) and todo > 1 then
-        print_block(block)
-        walk(node, dir)
+    local dir, node = first_that(adj_nodes(n_pos), should_fill)
+
+    if node then
+      walk(node, dir)
+    else
+      if not todo.is_empty() then
+        local path = find_path(mover.position, todo)
+        for _, dir in pairs(path) do
+          dig_move(mover, dir)
+        end
+        walk(mover.position, nil)
       end
     end
 
