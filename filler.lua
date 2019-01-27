@@ -260,14 +260,6 @@ function print_block(block, c_pos)
   print('')
 end
 
-function num_entries(table)
-  local count = 0
-  for k, v in pairs(table) do
-    count = count + 1
-  end
-  return count
-end
-
 function first_that(table, pred)
   for k, v in pairs(table) do
     if pred(v) then
@@ -351,8 +343,6 @@ function flood_fill_3d(block, target, replacement)
       todo.remove(n_pos)
     end
 
-    print_block(block, mover.position)
-    io.read()
     for k, v in pairs(adj_nodes(n_pos)) do
       if should_fill(v) then todo.add(v) end
     end
