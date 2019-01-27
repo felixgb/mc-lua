@@ -81,7 +81,7 @@ dir = {
   down = 6,
 }
 
-function make_cardinal_mover()
+function make_cardinal_mover(position)
   local facing_now = dir.north
 
   function right()
@@ -98,7 +98,8 @@ function make_cardinal_mover()
 
   return {
     turn_towards = turn_towards,
-    facing_now = facing_now
+    facing_now = facing_now,
+    position = position
   }
 end
 
@@ -108,16 +109,15 @@ function dig_move(cardinal_mover, direction)
     turtle.dig()
     assert(turtle.forward())
   elseif direction == dir.down then
-    cardinal_mover.turn_towards(dir.north)
     turtle.digDown()
     assert(turtle.down())
   elseif direction == dir.up then
-    cardinal_mover.turn_towards(dir.north)
     turtle.digUp()
     assert(turtle.up())
   else
     error('not a direction', direction)
   end
+  cardinal_mover.position = new_pos(cardinal_mover.position, direction)
 end
 
 function new_pos(old_pos, to_move)
@@ -165,9 +165,23 @@ function print_dir(di)
   end
 end
 
+function print_block(block)
+  print('BLOCK::::::::')
+  for i, level in pairs(block) do
+    print('level:')
+    for k, row in pairs(level) do
+      for l, col in pairs(row) do
+        io.write(col)
+      end
+      print('')
+    end
+  end
+  print('')
+end
+
 function flood_fill_3d(block, target, replacement)
-  local mover = make_cardinal_mover()
   local start_pos = { x = 1, y = 1, z = 1}
+  local mover = make_cardinal_mover(start_pos)
 
   function should_fill(n_pos)
     local typ = node_type(block, n_pos) 
@@ -179,8 +193,10 @@ function flood_fill_3d(block, target, replacement)
       local p = new_pos(n_pos, i)
 
       if should_fill(p) then
-        do_node(block, p, replacement)
         dig_move(mover, i)
+        do_node(block, mover.position, replacement)
+        print('pos now:', mover.position.x, mover.position.y, mover.position.z)
+        print_block(block)
         loop(p)
       end
     end

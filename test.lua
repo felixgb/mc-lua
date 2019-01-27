@@ -1,6 +1,6 @@
 filler = loadfile('filler.lua')()
 
-function print_block(block)
+local function print_block(block)
   for i, level in pairs(block) do
     print('level:')
     for k, row in pairs(level) do
@@ -42,8 +42,9 @@ function test_with_turtle(f, expected_commands)
 end
 
 function test_turn_south()
+  local start_pos = { x = 1, y = 1, z = 1}
   local test = function()
-    mover = filler.make_cardinal_mover()
+    mover = filler.make_cardinal_mover(start_pos)
     mover.turn_towards(dir.south)
   end
   local expected = {
@@ -55,8 +56,9 @@ function test_turn_south()
 end
 
 function test_360()
+  local start_pos = { x = 1, y = 1, z = 1}
   local test = function()
-    mover = filler.make_cardinal_mover()
+    mover = filler.make_cardinal_mover(start_pos)
     mover.turn_towards(dir.east)
     mover.turn_towards(dir.north)
     assert(mover.facing_now == dir.north)
@@ -72,8 +74,9 @@ function test_360()
 end
 
 function test_turn_north()
+  local start_pos = { x = 1, y = 1, z = 1}
   local test = function()
-    mover = filler.make_cardinal_mover()
+    mover = filler.make_cardinal_mover(start_pos)
     mover.turn_towards(dir.north)
   end
   local expected = {}
@@ -81,8 +84,9 @@ function test_turn_north()
 end
 
 function test_dig_move_south()
+  local start_pos = { x = 1, y = 1, z = 1}
   local test = function()
-    mover = filler.make_cardinal_mover()
+    mover = filler.make_cardinal_mover(start_pos)
     filler.dig_move(mover, dir.south)
   end
   local expected = {
@@ -96,15 +100,42 @@ function test_dig_move_south()
 end
 
 function test_ff(map, expected)
+  local start_pos = { x = 1, y = 1, z = 1}
   local test = function()
     local b = parse_block(map)
-    mover = filler.make_cardinal_mover()
+    mover = filler.make_cardinal_mover(start_pos)
     print_block(filler.flood_fill_3d(b, '.', 'x'))
   end
 
   test_with_turtle(test, expected)
 end
 
+function test_adj_move()
+  local map = [[
+.#...
+...##
+#..##
+..###
+..###
+]]
+  local expected_map = [[
+x#xxx
+xxx##
+#xx##
+xx###
+xx###
+]]
+  local start_pos = { x = 1, y = 1, z = 1}
+  local test = function()
+    local b = parse_block(map)
+    mover = filler.make_cardinal_mover(start_pos)
+    filler.flood_fill_3d(b, '.', 'x')
+  end
+
+  test_with_turtle(test, {})
+end
+
+test_adj_move()
 test_360()
 test_turn_north()
 test_turn_south()
