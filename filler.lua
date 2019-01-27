@@ -286,6 +286,7 @@ function flood_fill_3d(block, target, replacement)
   if target == replacement then
     error('target cannot be the same as replacement') 
   end
+  print_block(block)
 
   local start_pos = { x = 1, y = 1, z = 1}
   local mover = make_cardinal_mover(start_pos)
@@ -370,6 +371,7 @@ function flood_fill_3d(block, target, replacement)
   end
 
   walk(start_pos)
+  print('DONE')
   return block
 end
 
