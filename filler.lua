@@ -38,17 +38,17 @@ local funmap = [[
 ]]
 
 local thickmap = [[
-#xx
-xxx
-xxx
+#####
 
-##x
-##x
-xxx
+#####
 
-###
-###
-###
+#####
+
+#####
+
+#####
+
+#####
 ]]
 
 function parse_block(map)
