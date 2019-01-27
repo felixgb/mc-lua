@@ -135,6 +135,17 @@ xx###
   test_with_turtle(test, {})
 end
 
+-- test_ff([[
+-- ...
+-- ]], {
+--   'right',
+--   'dig',
+--   'forward',
+--   'right',
+--   'right',
+--   'dig',
+--   'forward',
+-- })
 test_adj_move()
 test_360()
 test_turn_north()
@@ -219,57 +230,4 @@ test_ff(
   'right',
   'dig',
   'forward'
-})
-
-test_ff(
-[[
-.##
-###
-
-..#
-..#
-###
-
-...
-...
-...
-]],
-{
-'digDown',
-'down',
-'right',
-'dig',
-'forward',
-'right',
-'dig',
-'forward',
-'right',
-'dig',
-'forward',
-'digDown',
-'down',
-'right',
-'dig',
-'forward',
-'right',
-'dig',
-'forward',
-'dig',
-'forward',
-'right',
-'dig',
-'forward',
-'dig',
-'forward',
-'right',
-'dig',
-'forward',
-'right',
-'dig',
-'forward',
-'right',
-'right',
-'right',
-'dig',
-'forward'
 })

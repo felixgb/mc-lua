@@ -38,18 +38,79 @@ local funmap = [[
 ]]
 
 local thickmap = [[
+x####
+#####
+#####
+#####
 #####
 
+xx###
+xx###
+#####
+#####
 #####
 
+xxx##
+xxx##
+xxx##
+#####
 #####
 
+xxxx#
+xxxx#
+xxxx#
+xxxx#
 #####
 
-#####
-
-#####
+xxxxx
+xxxxx
+xxxxx
+xxxxx
+xxxxx
 ]]
+
+function Queue(t)
+  local first = 0
+  local last = 0
+  local q = {}
+
+  function enqueue(v)
+    q[last] = v
+    last = last + 1
+  end
+
+  for _, v in pairs(t) do enqueue(v) end
+
+  return {
+    enqueue = enqueue,
+    dequeue = function()
+      local v = q[first]
+      first = first + 1
+      return v
+    end
+  }
+end
+
+function Set(t, hash_fun)
+  local s = {}
+  for _, v in pairs(t) do s[hash_fun(v)] = true end
+
+  function show()
+    for k, v in pairs(s) do print(k, v) end
+  end
+
+  return {
+    show = show,
+    contains = function(v) return s[hash_fun(v)] end,
+    remove = function(v) s[hash_fun(v)] = nil end,
+    add = function(v) s[hash_fun(v)] = true end,
+    all = s
+  }
+end
+
+function pos_to_string(p)
+  return tostring(p.x) .. '|' .. tostring(p.y) .. '|' .. tostring(p.z)
+end
 
 function parse_block(map)
   local block = {}
@@ -120,6 +181,19 @@ function dig_move(cardinal_mover, direction)
   cardinal_mover.position = new_pos(cardinal_mover.position, direction)
 end
 
+function adj_nodes(pos)
+  local nodes = {}
+  for i = 1, 6 do
+    nodes[i] = new_pos(pos, i)
+  end
+
+  return nodes
+end
+
+function are_adjacent(p1, p2)
+  return adj_nodes(p1).contains(p2)
+end
+
 function new_pos(old_pos, to_move)
   local n_pos = {
     x = old_pos.x,
@@ -152,10 +226,6 @@ function node_type(block, n_pos)
     and block[n_pos.y][n_pos.z][n_pos.x]
 end
 
-function do_node(block, n_pos, replacement)
-  block[n_pos.y][n_pos.z][n_pos.x] = replacement
-end
-
 function print_dir(di)
   for k, v in pairs(dir) do
     if v == di then
@@ -179,31 +249,71 @@ function print_block(block)
   print('')
 end
 
+function num_entries(table)
+  local count = 0
+  for k, v in pairs(table) do
+    count = count + 1
+  end
+  return count
+end
+
 function flood_fill_3d(block, target, replacement)
+  if target == replacement then
+    error('target cannot be the same as replacement') 
+  end
+
   local start_pos = { x = 1, y = 1, z = 1}
   local mover = make_cardinal_mover(start_pos)
+  local todo = 0
 
   function should_fill(n_pos)
     local typ = node_type(block, n_pos) 
-    return typ ~= nil and typ == target and target ~= replacement
+    return typ ~= nil and typ == target
   end
 
-  function loop(n_pos)
-    for i = 1, 6 do
-      local p = new_pos(n_pos, i)
+  function is_filled(n_pos)
+    local typ = node_type(block, n_pos) 
+    return typ ~= nil and typ == replacement
+  end
 
-      if should_fill(p) then
-        dig_move(mover, i)
-        do_node(block, mover.position, replacement)
-        print('pos now:', mover.position.x, mover.position.y, mover.position.z)
-        print_block(block)
-        loop(p)
+  function mark_node(pos)
+    block[pos.y][pos.z][pos.x] = replacement
+  end
+
+  function walk(n_pos, from_dir)
+    mark_node(n_pos)
+
+    if from_dir then
+      dig_move(mover, from_dir)
+      todo = todo - 1
+    end
+
+    local adj = adj_nodes(n_pos)
+
+    for dir, node in pairs(adj) do
+      if should_fill(node) then
+        todo = todo + 1
       end
     end
+    print(todo)
+
+    for dir, node in pairs(adj) do
+      if should_fill(node) then
+        print_block(block)
+        walk(node, dir)
+      end
+    end
+
+    for dir, node in pairs(adj) do
+      if is_filled(node) and todo > 1 then
+        print_block(block)
+        walk(node, dir)
+      end
+    end
+
   end
 
-  do_node(block, start_pos, replacement)
-  loop(start_pos)
+  walk(start_pos)
   return block
 end
 
