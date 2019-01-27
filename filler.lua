@@ -484,5 +484,6 @@ return {
   ff = function(b) flood_fill_3d(b, '#', 'x') end,
   smallmap = parse_block(smallmap),
   funmap = parse_block(funmap),
-  thickmap = parse_block(thickmap)
+  thickmap = parse_block(thickmap),
+  fapmap = parse_block(fatmap)
 }
