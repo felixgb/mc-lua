@@ -40,39 +40,39 @@ local funmap = [[
 local thickmap = [[
 #####
 #####
-##x##
-##x##
-##x##
+##n##
+##n##
+##n##
 
 #####
-#xxx#
-#xxx#
-#xxx#
-#xxx#
+#nnn#
+#nnn#
+#nnn#
+#nnn#
 
-xx#xx
-xxxxx
-xxxxx
-xxxxx
-xxxxx
-
-#####
-#xxx#
-#xxx#
-#xxx#
-#xxx#
+nn#nn
+nnnnn
+nnnnn
+nnnnn
+nnnnn
 
 #####
-#####
-##x##
-##x##
-##x##
+#nnn#
+#nnn#
+#nnn#
+#nnn#
 
 #####
 #####
-##x##
-##x##
-##x##
+##n##
+##n##
+##n##
+
+#####
+#####
+##n##
+##n##
+##n##
 ]]
 
 function Queue(t)
